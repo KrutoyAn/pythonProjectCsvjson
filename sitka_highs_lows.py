@@ -1,0 +1,46 @@
+import csv
+from datetime import datetime
+
+from matplotlib import pyplot as plt
+
+
+filename = 'data/sitka_weather_2018_simple.csv'
+with open(filename) as f:
+    reader = csv.reader(f)
+    header_row = next(reader)
+
+    # Получение дат, температурных минимумов и максимумов из файла.
+    dates, highs, lows, wths = [], [], [], []
+    for row in reader:
+        current_date = datetime.strptime(row[2], "%Y-%m-%d")
+        try:
+            wth = float(row[3])
+            high = int(row[5])
+            low = int(row[6])
+
+        except ValueError:
+            print(f"Missing data for {current_date}")
+        else:
+            dates.append(current_date)
+            highs.append(high)
+            lows.append(low)
+            wths.append(wth)
+
+
+    # Нанесение данных на диаграмму.
+    plt.style.use('seaborn')
+    fig, ax = plt.subplots()
+    ax.plot(dates, highs, c='red', alpha=0.5)
+    ax.plot(dates, lows, c='blue', alpha=0.5)
+    ax.plot(dates, wths, c='green', alpha=0.5)
+    plt.fill_between(dates, highs, lows, wths, facecolor='blue', alpha=0.1)
+
+    # Форматирование диаграммы.
+    title = "Daily high and low temperatures - 2018\nDeath Valley, CA"
+    plt.title(title, fontsize=20)
+    fig.autofmt_xdate()
+
+    plt.ylabel("Temperature (F)", fontsize=16)
+    plt.tick_params(axis='both', which='major', labelsize=12)
+
+    plt.show()
